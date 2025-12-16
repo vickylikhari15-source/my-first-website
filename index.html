@@ -1,0 +1,1070 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Data Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --accent: #7209b7;
+            --dark-bg: #0f0f1a;
+            --dark-card: #1a1a2e;
+            --dark-nav: #000011;
+            --light-text: #f8f9fa;
+            --gray-text: #a0a0b0;
+            --border-color: #2a2a3a;
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            --hover-shadow: 0 15px 40px rgba(67, 97, 238, 0.2);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--dark-nav);
+            color: var(--light-text);
+            padding: 25px 0;
+            transition: all 0.3s ease;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            position: relative;
+        }
+
+        .logo {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 12px;
+            font-size: 28px;
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            padding: 14px 25px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin-bottom: 5px;
+        }
+
+        .nav-links li:hover {
+            background-color: rgba(67, 97, 238, 0.08);
+        }
+
+        .nav-links li.active {
+            background-color: rgba(67, 97, 238, 0.15);
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-links a {
+            color: var(--light-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .nav-links i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: var(--dark-bg);
+            position: relative;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--light-text);
+            position: relative;
+        }
+
+        .header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 3px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+            background: var(--dark-card);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification:hover {
+            background: var(--border-color);
+        }
+
+        .notification i {
+            font-size: 20px;
+            color: var(--gray-text);
+        }
+
+        .notification::after {
+            content: '3';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, var(--warning), #ff2d95);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(247, 37, 133, 0.4);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--dark-card);
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--border-color);
+        }
+
+        .user-info img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--gray-text);
+        }
+
+        /* Page container (for SPA-like pages) */
+        .pages {
+            margin-top: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Reusing your existing styles for hero/metrics/charts */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 45px 40px;
+            border-radius: 18px;
+            margin-bottom: 40px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            margin-bottom: 18px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: white;
+            color: var(--primary);
+            padding: 14px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background-color: var(--dark-card);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .metric-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--success), transparent);
+        }
+
+        .metric-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--warning), transparent);
+        }
+
+        .metric-card:nth-child(4)::before {
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .metric-title {
+            font-size: 16px;
+            color: var(--gray-text);
+            font-weight: 600;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-icon.revenue {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        }
+
+        .metric-icon.users {
+            background: linear-gradient(135deg, var(--success), #2ec4ff);
+        }
+
+        .metric-icon.conversion {
+            background: linear-gradient(135deg, var(--warning), #ff2d95);
+        }
+
+        .metric-icon.performance {
+            background: linear-gradient(135deg, var(--accent), #9d4edd);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+        }
+
+        .metric-trend {
+            font-size: 14px;
+            margin-left: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .metric-description {
+            font-size: 14px;
+            color: var(--gray-text);
+            line-height: 1.6;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background-color: var(--dark-card);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--light-text);
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chart-actions button {
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            color: var(--gray-text);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-actions button:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .chart-container {
+            height: 320px;
+            position: relative;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--gray-text);
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: var(--dark-card);
+            border: 1px solid var(--border-color);
+            color: var(--light-text);
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 200;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--border-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                height: 100vh;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 30px 25px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .user-profile .user-details {
+                display: none;
+            }
+
+            .chart-actions {
+                display: none;
+            }
+
+            .chart-header {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 15px;
+                padding-top: 70px;
+            }
+
+            .metric-card, .chart-card {
+                padding: 20px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .metric-value {
+                font-size: 28px;
+            }
+
+            .hero {
+                padding: 25px 20px;
+            }
+
+            .hero h1 {
+                font-size: 24px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .cta-button {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+
+            .header h2 {
+                font-size: 24px;
+            }
+
+            .menu-toggle {
+                top: 15px;
+                left: 15px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .main-content {
+                padding: 10px;
+                padding-top: 70px;
+            }
+
+            .metric-card, .chart-card {
+                padding: 15px;
+            }
+
+            .metric-value {
+                font-size: 24px;
+            }
+
+            .metric-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .hero {
+                padding: 20px 15px;
+            }
+
+            .hero h1 {
+                font-size: 22px;
+            }
+
+            .notification, .user-profile {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                justify-content: center;
+            }
+
+            .user-profile img {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-chart-line"></i> AnalyticsPro</h1>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <!-- data-page attribute controls which page to show -->
+                <li class="active"><a href="#home" data-page="home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#dashboard" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#analytics" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="#reports" data-page="reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="#settings" data-page="settings"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#contact" data-page="contact"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="pageTitle">Dashboard Overview</h2>
+                <div class="user-info">
+                    <div class="notification" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="user-profile" title="User profile">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <div class="user-details">
+                            <span class="user-name">Sarah Johnson</span>
+                            <span class="user-role">Administrator</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGES: each page is inside .pages and has class .page -->
+            <div class="pages" id="pages">
+
+                <!-- HOME PAGE -->
+                <section id="home" class="page active" aria-labelledby="homeTitle">
+                    <div class="hero">
+                        <h1 id="homeTitle">Data Analytics Dashboard</h1>
+                        <p>Transform your data into actionable insights with our cutting-edge analytics platform. Real-time monitoring, intelligent predictions, and beautiful visualizations.</p>
+                        <a href="#dashboard" class="cta-button" data-page="dashboard">Get Started <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="metrics-grid" aria-hidden="false">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">Total Revenue</div>
+                                <div class="metric-icon revenue">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">$42,847 <span class="metric-trend trend-up">+23%</span></div>
+                            <div class="metric-description">Revenue increased by 23% compared to last month with strong performance across all channels.</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">Active Users</div>
+                                <div class="metric-icon users">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">18.5K</div>
+                            <div class="metric-description">Real-time analytics showing active users currently engaging with the platform.</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">Conversion Rate</div>
+                                <div class="metric-icon conversion">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">94.3% <span class="metric-trend trend-up">+5.2%</span></div>
+                            <div class="metric-description">Customer satisfaction rate based on recent surveys and feedback analysis.</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">Performance Score</div>
+                                <div class="metric-icon performance">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">7,392</div>
+                            <div class="metric-description">Overall system performance metrics showing optimal operation across all services.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DASHBOARD PAGE -->
+                <section id="dashboard" class="page" aria-labelledby="dashboardTitle">
+                    <h3 id="dashboardTitle" style="margin-bottom:18px;">Dashboard</h3>
+
+                    <div class="charts-section">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Revenue Trends</div>
+                                <div class="chart-actions">
+                                    <button title="Download"><i class="fas fa-download"></i></button>
+                                    <button title="Expand"><i class="fas fa-expand"></i></button>
+                                    <button title="More"><i class="fas fa-ellipsis-v"></i></button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">User Activity</div>
+                                <div class="chart-actions">
+                                    <button title="Download"><i class="fas fa-download"></i></button>
+                                    <button title="Expand"><i class="fas fa-expand"></i></button>
+                                    <button title="More"><i class="fas fa-ellipsis-v"></i></button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ANALYTICS PAGE -->
+                <section id="analytics" class="page" aria-labelledby="analyticsTitle">
+                    <h3 id="analyticsTitle" style="margin-bottom:18px;">Analytics</h3>
+                    <div class="chart-card" style="margin-bottom:20px;">
+                        <div class="chart-header">
+                            <div class="chart-title">Top Events</div>
+                        </div>
+                        <div style="padding:18px;color:var(--gray-text);">Here you'd show deeper analytics charts, segments, funnels, etc.</div>
+                    </div>
+                    <div class="metric-card" style="padding:18px;">
+                        <div class="metric-title">Behavioral Cohorts</div>
+                        <div style="color:var(--gray-text);margin-top:8px;">Add tables or cohort visualizations here.</div>
+                    </div>
+                </section>
+
+                <!-- REPORTS PAGE -->
+                <section id="reports" class="page" aria-labelledby="reportsTitle">
+                    <h3 id="reportsTitle" style="margin-bottom:18px;">Reports</h3>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Monthly Reports</div>
+                        </div>
+                        <div style="padding:18px;color:var(--gray-text);">Export, schedule and manage PDF/CSV reports from here.</div>
+                    </div>
+                </section>
+
+                <!-- SETTINGS PAGE -->
+                <section id="settings" class="page" aria-labelledby="settingsTitle">
+                    <h3 id="settingsTitle" style="margin-bottom:18px;">Settings</h3>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Application Settings</div>
+                        </div>
+                        <div style="padding:18px;color:var(--gray-text);">User, account, integrations and preferences.</div>
+                    </div>
+                </section>
+
+                <!-- CONTACT PAGE -->
+                <section id="contact" class="page" aria-labelledby="contactTitle">
+                    <h3 id="contactTitle" style="margin-bottom:18px;">Contact</h3>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Get in touch</div>
+                        </div>
+                        <div style="padding:18px;color:var(--gray-text);">
+                            <p>Email: support@analyticspro.example</p>
+                            <p style="margin-top:6px;">Phone: +1 555 123 4567</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>© 2025 AnalyticsPro Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Page navigation logic (SPA-like) ---
+        (function() {
+            const navLinks = document.querySelectorAll('.nav-links a[data-page]');
+            const pages = document.querySelectorAll('.page');
+            const pageTitle = document.getElementById('pageTitle');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            function showPage(pageId, pushState = true) {
+                // Hide all pages
+                pages.forEach(p => p.classList.remove('active'));
+                // Remove active class from nav items
+                document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+
+                // Show requested page
+                const target = document.getElementById(pageId);
+                if (target) {
+                    target.classList.add('active');
+
+                    // Update header title (simple fallback)
+                    const titleEl = target.querySelector('h1, h3');
+                    pageTitle.textContent = titleEl ? titleEl.textContent : 'Dashboard Overview';
+                } else {
+                    pageTitle.textContent = 'Dashboard Overview';
+                }
+
+                // Mark nav active
+                const link = document.querySelector('.nav-links a[data-page="' + pageId + '"]');
+                if (link && link.parentElement) {
+                    link.parentElement.classList.add('active');
+                }
+
+                // Update URL hash for direct linking
+                if (pushState) {
+                    const newHash = '#' + pageId;
+                    if (location.hash !== newHash) {
+                        history.pushState({ page: pageId }, '', newHash);
+                    }
+                }
+
+                // Close sidebar on small screens after click
+                if (window.innerWidth <= 992 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            }
+
+            // Attach click handlers to nav links
+            navLinks.forEach(a => {
+                a.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                });
+            });
+
+            // Handle CTA buttons that use data-page
+            document.querySelectorAll('[data-page]').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    const page = this.getAttribute('data-page');
+                    if (page && this.tagName.toLowerCase() === 'a') {
+                        // allow anchor default only if it's external. we prevented earlier in nav.
+                        e.preventDefault();
+                        showPage(page);
+                    }
+                });
+            });
+
+            // Handle popstate (back/forward)
+            window.addEventListener('popstate', function(e) {
+                const pageFromState = (e.state && e.state.page) || location.hash.replace('#','') || 'home';
+                showPage(pageFromState, false);
+            });
+
+            // Initial page: check hash
+            const initial = location.hash ? location.hash.replace('#','') : 'home';
+            // Validate initial exists, otherwise fallback to home
+            if (document.getElementById(initial)) {
+                showPage(initial, false);
+            } else {
+                showPage('home', false);
+            }
+
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 992) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnMenuToggle = menuToggle.contains(event.target);
+
+                    if (!isClickInsideSidebar && !isClickOnMenuToggle && sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+
+            // Add some interactivity to metric cards (keeps your original behavior)
+            const metricCards = document.querySelectorAll('.metric-card');
+            metricCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    metricCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        })();
+
+        // --- Charts initialization (same as your original code) ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart
+            const revenueCtxEl = document.getElementById('revenueChart');
+            if (revenueCtxEl) {
+                const revenueCtx = revenueCtxEl.getContext('2d');
+                new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: [32000, 35000, 38000, 37000, 39000, 41000, 40000, 42000, 43000, 42500, 42847, 44000],
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4361ee',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#adb5bd',
+                                    callback: function(value) { return '$' + value/1000 + 'K'; }
+                                }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#adb5bd' }
+                            }
+                        },
+                        interaction: { intersect: false, mode: 'index' }
+                    }
+                });
+            }
+
+            // Activity Chart
+            const activityCtxEl = document.getElementById('activityChart');
+            if (activityCtxEl) {
+                const activityCtx = activityCtxEl.getContext('2d');
+                new Chart(activityCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Mobile', 'Desktop', 'Tablet'],
+                        datasets: [{
+                            data: [55, 35, 10],
+                            backgroundColor: ['#4361ee', '#4cc9f0', '#f72585'],
+                            borderWidth: 0,
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#adb5bd',
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { size: 13 }
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
